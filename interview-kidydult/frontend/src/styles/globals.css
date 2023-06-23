@@ -16,12 +16,23 @@
   }
 }
 
+@layer base {
+	:root {
+		--canvas-top: 0px;
+    --canvas-left: 0px;
+    --highlight-color: 254 248 226;
+    --shadow-color: 27 27 27;
+    --dimmer-shadow: 36 36 36;
+    --accent-red: 173 100 84;
+    --accent-cyan: 95 146 143;
+    --accent-yellow: 179 161 131;
+    --accent-bri-yellow: 210 178 79;
+    --accent-blue: 49 52 64;
+    --accent-green: 106 153 98;
+	}
+}
+
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--dimmer-shadow));
 }
