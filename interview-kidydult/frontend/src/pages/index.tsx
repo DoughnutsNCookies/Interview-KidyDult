@@ -41,17 +41,38 @@ const FileDropZone = () => {
     setDroppedFiles((prevFiles) => [...prevFiles, ...uniqueFiles]);
   };
 
-  const handleRemoveFile = (file: File) => {
+  const handleRemoveFile = (file: File[]) => {
     setDroppedFiles((prevFiles) =>
-      prevFiles.filter((prevFile) => prevFile !== file)
+      prevFiles.filter((prevFile) => !file.includes(prevFile))
     );
+  };
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    droppedFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+    try {
+      const response = await fetch("http://localhost:3000", {
+        method: "POST",
+        body: formData,
+      });
+      if (response.status !== 201) {
+        const errorResponse = await response.json();
+        console.log(errorResponse.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <div
       className={`file-drop-zone ${
-        highlighted ? "bg-highlight text-dimshadow" : ""
-      } text-highlight border-2 border-dashed border-highlight p-4 text-center cursor-pointer`}
+        highlighted
+          ? "bg-highlight text-dimshadow border-dimshadow"
+          : "border-highlight"
+      } border-2 border-dashed p-4 text-center cursor-pointer`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -66,10 +87,14 @@ const FileDropZone = () => {
                 key={file.name}
                 className="flex items-center justify-between py-1"
               >
-                <span>{file.name.length <= 32 ? file.name : file.name.substring(0, 32) + "..."}</span>
+                <span>
+                  {file.name.length <= 32
+                    ? file.name
+                    : file.name.substring(0, 32) + "..."}
+                </span>
                 <button
                   className="text-accRed"
-                  onClick={() => handleRemoveFile(file)}
+                  onClick={() => handleRemoveFile([file])}
                 >
                   Remove
                 </button>
@@ -77,8 +102,18 @@ const FileDropZone = () => {
             ))}
           </ul>
           <div className="flex justify-between">
-            <button className=" text-accGreen mt-4">Upload</button>
-            <button className=" text-accRed mt-4">Remove All</button>
+            <button
+              className=" text-accGreen mt-4"
+              onClick={() => handleUpload()}
+            >
+              Upload
+            </button>
+            <button
+              className=" text-accRed mt-4"
+              onClick={() => handleRemoveFile(droppedFiles)}
+            >
+              Remove All
+            </button>
           </div>
         </div>
       )}

@@ -1,8 +1,15 @@
-import { Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { HelloDTO } from './dto/hello.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { interceptorConfig } from './config/interceptor.config';
+import { FileArray } from 'multer';
 
 @Controller()
 export class AppController {
@@ -14,8 +21,8 @@ export class AppController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image', interceptorConfig))
-  receiveFile(): any {
+  @UseInterceptors(FilesInterceptor('files', 100, interceptorConfig))
+  receiveFile(@UploadedFiles() files: FileArray): any {
     return this.appService.getHello();
   }
 }
