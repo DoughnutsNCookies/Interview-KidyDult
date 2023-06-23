@@ -59,7 +59,7 @@ const FileDropZone = () => {
   const handleUpload = async () => {
     const formData = new FormData();
     droppedFiles.forEach((file) => {
-      formData.append("files", file);
+      formData.append("file", file);
     });
     try {
       const response = await fetch("http://localhost:3000", {
