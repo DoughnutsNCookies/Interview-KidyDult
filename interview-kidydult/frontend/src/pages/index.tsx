@@ -3,8 +3,17 @@ import { useEffect, useState } from "react";
 function Home() {
   return (
     <main className=" font-jbmono p-20">
-      <h1 className=" text-4xl text-highlight">Upload a log file (.txt)</h1>
-      <FileDropZone />
+      <div className=" flex flex-row text-highlight justify-between gap-x-32">
+        <div className=" w-1/2">
+          <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
+          <FileDropZone />
+        </div>
+
+        <div className=" w-1/2 pt-14">
+          <h1 className="text-2xl pb-2">Results:</h1>
+          <AnswerBox />
+        </div>
+      </div>
     </main>
   );
 }
@@ -68,19 +77,27 @@ const FileDropZone = () => {
 
   return (
     <div
-      className={`file-drop-zone ${
-        highlighted
+      className={`${
+        highlighted && droppedFiles.length === 0
           ? "bg-highlight text-dimshadow border-dimshadow"
           : "border-highlight"
-      } border-2 border-dashed p-4 text-center cursor-pointer`}
+      }
+      ${
+        droppedFiles.length === 0 && "justify-center flex flex-col"
+      } relative w-full h-[500px] border-2 border-dashed p-4 text-center cursor-pointer`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      Drop files here
+      <p className="pb-2">
+        {droppedFiles.length === 0
+          ? "Drag and drop your files here"
+          : "You can still drop more!"}
+      </p>
       {droppedFiles.length > 0 && (
-        <div>
+        <>
+          <hr />
           <ul className="mt-4">
             {droppedFiles.map((file) => (
               <li
@@ -93,7 +110,7 @@ const FileDropZone = () => {
                     : file.name.substring(0, 32) + "..."}
                 </span>
                 <button
-                  className="text-accRed"
+                  className="text-accRed hover:text-white transition-all hover:bg-accRed px-2 rounded-md ease-linear"
                   onClick={() => handleRemoveFile([file])}
                 >
                   Remove
@@ -101,22 +118,22 @@ const FileDropZone = () => {
               </li>
             ))}
           </ul>
-          <div className="flex justify-between">
-            <button
-              className=" text-accGreen mt-4"
-              onClick={() => handleUpload()}
-            >
-              Upload
-            </button>
-            <button
-              className=" text-accRed mt-4"
-              onClick={() => handleRemoveFile(droppedFiles)}
-            >
-              Remove All
-            </button>
-          </div>
-        </div>
+          <button
+            className="text-accRed absolute bottom-3 left-1/2 -translate-x-1/2 border-2 border-accRed px-2 py-1 rounded-md hover:bg-accRed hover:text-white transition-all"
+            onClick={() => handleRemoveFile(droppedFiles)}
+          >
+            Remove All
+          </button>
+        </>
       )}
+    </div>
+  );
+};
+
+const AnswerBox = () => {
+  return (
+    <div className="text-center bg-dimshadow border-highlight">
+      <div className="border-2 p-4 h-[400px]"></div>
     </div>
   );
 };
