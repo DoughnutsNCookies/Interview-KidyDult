@@ -1,17 +1,50 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function Home() {
+  const [type, setType] = useState<string>("ALL");
+  const [order, setOrder] = useState<string>("DESC");
+  const [find, setFind] = useState<string>("PHRASE");
+
   return (
     <main className=" font-jbmono p-20">
       <div className=" flex flex-row text-highlight justify-between gap-x-32">
         <div className=" w-1/2">
           <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
           <FileDropZone />
+          <button className=" text-accGreen text-2xl font-bold border-2 border-accGreen w-1/2 my-5 px-2 py-1 rounded-md hover:bg-accGreen hover:text-white transition-all">
+            Upload!
+          </button>
         </div>
 
         <div className=" w-1/2 pt-14">
           <h1 className="text-2xl pb-2">Results:</h1>
           <AnswerBox />
+          <div className=" flex flex-row justify-evenly pt-3">
+            <button
+              className={`border-2 ${type === "ALL" ? "border-accCyan text-accCyan" : "border-accYellow text-accYellow"} rounded-md w-1/5 transition-all`}
+              onClick={() => setType(type === "ALL" ? "PER" : "ALL")}
+            >
+              {type}
+            </button>
+            <button
+              className={`border-2 ${order === "DESC" ? "border-accCyan text-accCyan" : "border-accYellow text-accYellow"} rounded-md w-1/5 transition-all`}
+              onClick={() => setOrder(order === "DESC" ? "ASC" : "DESC")
+            }
+            >
+              {order}
+            </button>
+            <button
+              className={`border-2 ${find === "PHRASE" ? "border-accCyan text-accCyan" : "border-accYellow text-accYellow"} rounded-md w-1/5 transition-all`}
+              onClick={() => setFind(find === "PHRASE" ? "WORD" : "PHRASE")}
+            >
+              {find}
+            </button>
+            <input
+              type="number"
+              placeholder="K Value"
+              className=" w-1/5 bg-transparent rounded-md border-2 border-highlight text-center number-input focus:outline-none"
+            />
+          </div>
         </div>
       </div>
     </main>
@@ -95,6 +128,9 @@ const FileDropZone = () => {
           ? "Drag and drop your files here"
           : "You can still drop more!"}
       </p>
+      {droppedFiles.length === 0 ? <p>
+        or click <input type="file" id="fileInput" className="hidden"/><label htmlFor="fileInput" className="cursor-pointer text-accCyan hover:underline">HERE</label>
+      </p> : <></>}
       {droppedFiles.length > 0 && (
         <>
           <hr />
