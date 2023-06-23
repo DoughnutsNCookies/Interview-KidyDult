@@ -10,13 +10,12 @@ export class AppController {
 
   @Get()
   getHello(): HelloDTO {
-	return this.appService.getHello();
-	}
-	
-	@Post()
-	@UseInterceptors(FileInterceptor('image', interceptorConfig))
-	receiveFile(): any {
-		return this.appService.getHello();
-	}
-	
+    return this.appService.getHello();
+  }
+
+  @Post()
+  @UseInterceptors(FileInterceptor('image', interceptorConfig))
+  receiveFile(): any {
+    return this.appService.getHello();
+  }
 }

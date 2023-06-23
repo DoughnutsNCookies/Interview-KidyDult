@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 function Home() {
   return (
-    <main className=" font-jbmono p-28">
+    <main className=" font-jbmono p-20">
       <h1 className=" text-4xl text-highlight">Upload a log file (.txt)</h1>
       <FileDropZone />
     </main>
@@ -33,10 +33,11 @@ const FileDropZone = () => {
     e.preventDefault();
     setHighlighted(false);
 
-		const files = Array.from(e.dataTransfer.files) as File[];
-		const uniqueFiles = files.filter(
-			(file) => !droppedFiles.some((droppedFile) => droppedFile.name === file.name)
-		)
+    const files = Array.from(e.dataTransfer.files) as File[];
+    const uniqueFiles = files.filter(
+      (file) =>
+        !droppedFiles.some((droppedFile) => droppedFile.name === file.name)
+    );
     setDroppedFiles((prevFiles) => [...prevFiles, ...uniqueFiles]);
   };
 
@@ -56,30 +57,31 @@ const FileDropZone = () => {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-			Drop files here
+      Drop files here
       {droppedFiles.length > 0 && (
-        <ul className="mt-4">
-          {droppedFiles.map((file) => (
-            <li
-              key={file.name}
-              className="flex items-center justify-between py-1"
-            >
-              <span>{file.name}</span>
-              <button
-                className="text-accRed"
-                onClick={() => handleRemoveFile(file)}
+        <div>
+          <ul className="mt-4">
+            {droppedFiles.map((file) => (
+              <li
+                key={file.name}
+                className="flex items-center justify-between py-1"
               >
-                Remove
-              </button>
-            </li>
-          ))}
-				</ul>
-			)}
-			{droppedFiles.length > 0 &&
-				<div className="flex justify-between">
-					<button className="mt-4">Upload</button>
-					<button className="mt-4">Remove All</button>
-				</div>}
+                <span>{file.name.length <= 32 ? file.name : file.name.substring(0, 32) + "..."}</span>
+                <button
+                  className="text-accRed"
+                  onClick={() => handleRemoveFile(file)}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="flex justify-between">
+            <button className=" text-accGreen mt-4">Upload</button>
+            <button className=" text-accRed mt-4">Remove All</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
