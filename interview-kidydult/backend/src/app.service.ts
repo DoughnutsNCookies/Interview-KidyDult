@@ -34,7 +34,7 @@ export class AppService {
     )
       throw new Error('Missing or invalid find - WORD or SENT only');
 
-    if (formData.k === undefined || formData.k < 0)
+    if (formData.k === undefined || formData.k < 1)
       throw new Error('Missing or invalid k - positive integers only');
   }
 
