@@ -3,13 +3,13 @@ import SettingContext from "../contexts/SettingContext";
 import { UserDTO, ResultContext } from "../contexts/ResultContext";
 
 function Home() {
-  const [type, setType] = useState<string>("ALL");
+	const [type, setType] = useState<string>("ALL");
   const [order, setOrder] = useState<string>("DESC");
   const [find, setFind] = useState<string>("WORD");
   const [k, setK] = useState<number>(0);
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [results, setResults] = useState<UserDTO[] | UserDTO[][]>([]);
-  const [toolTip, setToolTip] = useState<string>("ALL");
+  const [toolTip, setToolTip] = useState<string>("");
 
   return (
     <SettingContext.Provider
@@ -50,7 +50,8 @@ function Home() {
                 <KInput setter={setK} />
               </div>
               <span className="text-center w-full py-1 text-md text-highlight animate-pulse">
-                {(toolTip === "ALL" && "Showing results from ALL files") ||
+                {(toolTip === "" && "") ||
+                  (toolTip === "ALL" && "Showing results from ALL files") ||
                   (toolTip === "PER" && "Showing results PER file") ||
                   (toolTip === "DESC" && "Showing results in DESC order") ||
                   (toolTip === "ASC" && "Showing results in ASC order") ||
@@ -299,13 +300,18 @@ interface ISettingButton {
 
 const SettingButton = (props: ISettingButton) => {
   const { opt1, opt2, setter, setting, setTooltip } = props;
-  const { type, order, find, k, droppedFiles } = useContext(SettingContext);
+	const { type, order, find, k, droppedFiles } = useContext(SettingContext);
+	const [hover, setHover] = useState<boolean>(false);
   const { setResults } = useContext(ResultContext);
 
   useEffect(() => {
-    uploadFiles(type, order, find, k, droppedFiles, setResults);
-    setTooltip(setting);
-  }, [setting]);
+		uploadFiles(type, order, find, k, droppedFiles, setResults);
+		setTooltip(setting);
+	}, [setting]);
+
+	useEffect(() => {
+		setTooltip(hover ? setting : "")
+	}, [hover]);
 
   return (
     <button
@@ -315,8 +321,8 @@ const SettingButton = (props: ISettingButton) => {
           : "border-accYellow text-accYellow"
       } rounded-md w-1/5 transition-all`}
       onClick={() => setter(setting === opt1 ? opt2 : opt1)}
-      onMouseOver={() => setTooltip(setting)}
-      onMouseLeave={() => setTooltip("")}
+      onMouseOver={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
     >
       {setting}
     </button>
@@ -341,7 +347,9 @@ const KInput = (props: IKInput) => {
     <input
       type="number"
       placeholder="K Value"
-      className=" w-1/5 bg-transparent rounded-md border-2 border-highlight text-center number-input focus:outline-none"
+      className={` w-1/5 bg-transparent rounded-md border-2 border-highlight text-center number-input focus:outline-none ${
+        k < 1 ? " animate-pulse" : ""
+      }`}
       onChange={(e) => setter(parseInt(e.target.value))}
     />
   );
