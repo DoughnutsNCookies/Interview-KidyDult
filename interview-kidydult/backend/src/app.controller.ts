@@ -26,7 +26,8 @@ export class AppController {
   generateOutputForAll(
     @UploadedFiles() files: FileArray,
     @Body() formData: FormDataDTO,
-  ): Promise<UserDTO[]> {
+	): Promise<UserDTO[]> {
+		console.log("Received");
     const filePaths: string[] = files.map((file) => file.path);
     return this.appService.generateOutputForAll(filePaths, formData);
   }
