@@ -1,11 +1,11 @@
 export class UserDTO {
-  constructor(name: string, words: number) {
+  constructor(name: string, count: number) {
     this.name = name;
-    this.words = words;
+    this.count = count;
   }
 
   name: string;
-  words: number;
+  count: number;
 }
 
 export class FormDataDTO {
