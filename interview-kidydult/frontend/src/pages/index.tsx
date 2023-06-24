@@ -9,6 +9,7 @@ function Home() {
   const [k, setK] = useState<number>(0);
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [results, setResults] = useState<UserDTO[] | UserDTO[][]>([]);
+  const [toolTip, setToolTip] = useState<string>("ALL");
 
   return (
     <SettingContext.Provider
@@ -20,17 +21,8 @@ function Home() {
             <div className=" w-1/2">
               <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
               <FileDropZone />
-              <button
-                className=" text-accGreen text-2xl font-bold border-2 border-accGreen w-1/2 my-5 px-2 py-1 rounded-md hover:bg-accGreen hover:text-white transition-all"
-                onClick={async () =>
-                  uploadFiles(type, order, find, k, droppedFiles, setResults)
-                }
-              >
-                Upload!
-              </button>
             </div>
-
-            <div className=" w-1/2 pt-14">
+            <div className=" w-1/2 pt-14 flex flex-col">
               <h1 className="text-2xl pb-2">Results:</h1>
               <AnswerBox />
               <div className=" flex flex-row justify-evenly pt-3">
@@ -39,21 +31,34 @@ function Home() {
                   opt2="PER"
                   setter={setType}
                   setting={type}
+                  setTooltip={setToolTip}
                 />
                 <SettingButton
                   opt1="DESC"
                   opt2="ASC"
                   setter={setOrder}
                   setting={order}
+                  setTooltip={setToolTip}
                 />
                 <SettingButton
                   opt1="WORD"
-                  opt2="PHRASE"
+                  opt2="SENT"
                   setter={setFind}
                   setting={find}
+                  setTooltip={setToolTip}
                 />
                 <KInput setter={setK} />
               </div>
+              <span className="text-center w-full py-1 text-md text-highlight animate-pulse">
+                {(toolTip === "ALL" && "Showing results from ALL files") ||
+                  (toolTip === "PER" && "Showing results PER file") ||
+                  (toolTip === "DESC" && "Showing results in DESC order") ||
+                  (toolTip === "ASC" && "Showing results in ASC order") ||
+                  (toolTip === "WORD" &&
+                    "Showing results of WORD count per user") ||
+                  (toolTip === "SENT" &&
+                    "Showing results of SENTENCE count per user")}
+              </span>
             </div>
           </div>
         </main>
@@ -66,7 +71,9 @@ export default Home;
 
 const FileDropZone = () => {
   const [highlighted, setHighlighted] = useState<boolean>(false);
-  const { droppedFiles, setDroppedFiles } = useContext(SettingContext);
+  const { type, order, find, k, droppedFiles, setDroppedFiles } =
+    useContext(SettingContext);
+  const { setResults } = useContext(ResultContext);
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -100,6 +107,11 @@ const FileDropZone = () => {
     );
   };
 
+  const handleRemoveAll = () => {
+    setDroppedFiles([]);
+    setResults([]);
+  };
+
   return (
     <div
       className={`${
@@ -109,7 +121,7 @@ const FileDropZone = () => {
       }
       ${
         droppedFiles.length === 0 && "justify-center flex flex-col h-[500px]"
-      } relative w-full border-2 border-dashed p-4 text-center cursor-pointer rounded-md transition-all`}
+      } relative w-full border-2 border-dashed py-4 text-center cursor-pointer rounded-md transition-all`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -135,23 +147,23 @@ const FileDropZone = () => {
       )}
       {droppedFiles.length > 0 && (
         <>
-          <hr />
+          <hr className="mx-4" />
           <ul className="my-4 h-[360px] overflow-y-auto scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10">
             {droppedFiles.map((file) => (
               <li
                 key={file.name}
-                className="flex items-center justify-between py-1"
+                className="flex items-center justify-between py-1 rounded-md transition-all hover:bg-highlight/10"
               >
                 <span
                   className={`${
                     file.name.endsWith(".txt") && file.size < 1000000
                       ? "text-highlight"
                       : " text-accRed"
-                  }`}
+                  } pl-4`}
                 >
-                  {file.name.length <= 32
+                  {file.name.length <= 16
                     ? file.name
-                    : file.name.substring(0, 32) + "..."}
+                    : file.name.substring(0, 16) + "..."}
                 </span>
                 <button
                   className="text-accRed hover:text-white transition-all hover:bg-accRed px-2 mr-2 rounded-md ease-linear"
@@ -162,13 +174,23 @@ const FileDropZone = () => {
               </li>
             ))}
           </ul>
-          <hr className="pb-10" />
-          <button
-            className="text-accRed absolute bottom-3 left-1/2 -translate-x-1/2 border-2 border-accRed px-2 py-1 rounded-md hover:bg-accRed hover:text-white transition-all"
-            onClick={() => handleRemoveFile(droppedFiles)}
-          >
-            Remove All
-          </button>
+          <hr className="pb-4 mx-4" />
+          <div className="flex flex-row justify-evenly">
+            <button
+              className=" text-accGreen w-1/3 font-bold border-2 border-accGreen px-2 py-1 rounded-md hover:bg-accGreen hover:text-white transition-all"
+              onClick={async () =>
+                uploadFiles(type, order, find, k, droppedFiles, setResults)
+              }
+            >
+              Upload
+            </button>
+            <button
+              className="text-accRed w-1/3 border-2 border-accRed px-2 py-1 rounded-md hover:bg-accRed hover:text-white transition-all"
+              onClick={() => handleRemoveAll()}
+            >
+              Remove All
+            </button>
+          </div>
         </>
       )}
     </div>
@@ -179,44 +201,53 @@ const AnswerBox = () => {
   const { find, droppedFiles } = useContext(SettingContext);
   const { results } = useContext(ResultContext);
 
-  if (Array.isArray(results[0]) && results[0].length > 0)
-    return (
-      <div className="bg-dimshadow border-highlight">
-        <div className="border-2 p-4 h-[400px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10">
-          <ul className="transition-all">
-            {results.map((file: any, fileIndex) => (
-							<div className="pb-2">
-								<span className=" text-lg">{droppedFiles[fileIndex].name.length <= 32 ? droppedFiles[fileIndex].name : droppedFiles[fileIndex].name.substring(0, 32) + "..."}</span>
-								<hr className="py-1" />
-                {file.map((result: any, userIndex: number) => (
-                  <li key={result.name} className="pb-1 flex flex-row">
-                    <span className="font-bold w-10">{userIndex + 1}.</span>
-                    <span>
-                      {result.name} - {result.count}{" "}
-                      {find === "WORD" ? "words" : "phrases"}
-                    </span>
-                  </li>
-                ))}
-              </div>
-            ))}
-          </ul>
+  const ListItems = (props: { output: UserDTO[] | UserDTO[][] }) => (
+    <ul>
+      {props.output.map((result: any, userIndex: number) => (
+        <li
+          key={result.name}
+          className="pb-1 flex flex-row justify-between rounded-md transition-all hover:bg-highlight/10"
+        >
+          <div className="flex flex-row">
+            <span className="pl-4 font-bold w-14">{userIndex + 1}.</span>
+            <span>
+              {result.name.length <= 16
+                ? result.name
+                : result.name.substring(0, 16) + "..."}
+            </span>
+          </div>
+          <span className="pr-4">
+            {result.count} {find === "WORD" ? "words" : "sentences"}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+
+  const NestedListItems = () => (
+    <>
+      {results.map((file: any, fileIndex) => (
+        <div key={fileIndex} className="pb-2">
+          <span className="text-lg ml-4">
+            {droppedFiles[fileIndex].name.length <= 32
+              ? droppedFiles[fileIndex].name
+              : droppedFiles[fileIndex].name.substring(0, 32) + "..."}
+          </span>
+          <hr className="mx-4 py-1" />
+          <ListItems output={file} />
         </div>
-      </div>
-    );
+      ))}
+    </>
+  );
+
   return (
     <div className="bg-dimshadow border-highlight">
-      <div className="border-2 p-4 h-[400px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10">
-        <ul className="transition-all">
-          {results.map((result: any, index: number) => (
-            <li key={result.name} className="pb-1 flex flex-row">
-              <span className="font-bold w-10">{index + 1}.</span>
-              <span>
-                {result.name} - {result.count}{" "}
-                {find === "WORD" ? "words" : "phrases"}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div className="border-2 py-2 h-[400px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10 transition-all">
+        {Array.isArray(results[0]) && results[0].length > 0 ? (
+          <NestedListItems />
+        ) : (
+          <ListItems output={results} />
+        )}
       </div>
     </div>
   );
@@ -263,15 +294,17 @@ interface ISettingButton {
   opt2: string;
   setter: (opt: string) => void;
   setting: string;
+  setTooltip: (toolTip: string) => void;
 }
 
 const SettingButton = (props: ISettingButton) => {
-  const { opt1, opt2, setter, setting } = props;
+  const { opt1, opt2, setter, setting, setTooltip } = props;
   const { type, order, find, k, droppedFiles } = useContext(SettingContext);
   const { setResults } = useContext(ResultContext);
 
   useEffect(() => {
     uploadFiles(type, order, find, k, droppedFiles, setResults);
+    setTooltip(setting);
   }, [setting]);
 
   return (
@@ -282,6 +315,8 @@ const SettingButton = (props: ISettingButton) => {
           : "border-accYellow text-accYellow"
       } rounded-md w-1/5 transition-all`}
       onClick={() => setter(setting === opt1 ? opt2 : opt1)}
+      onMouseOver={() => setTooltip(setting)}
+      onMouseLeave={() => setTooltip("")}
     >
       {setting}
     </button>

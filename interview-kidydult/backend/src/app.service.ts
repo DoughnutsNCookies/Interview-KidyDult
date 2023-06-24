@@ -30,9 +30,9 @@ export class AppService {
 
     if (
       formData.find === undefined ||
-      (formData.find !== 'WORD' && formData.find !== 'PHRASE')
+      (formData.find !== 'WORD' && formData.find !== 'SENT')
     )
-      throw new Error('Missing or invalid find - WORD or PHRASE only');
+      throw new Error('Missing or invalid find - WORD or SENT only');
 
     if (formData.k === undefined || formData.k < 0)
       throw new Error('Missing or invalid k - positive integers only');
