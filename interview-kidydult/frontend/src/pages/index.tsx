@@ -19,17 +19,17 @@ function Home() {
         value={{ type, order, find, k, droppedFiles, setDroppedFiles }}
       >
         <ResultContext.Provider value={{ results, setResults }}>
-          <main className="font-jbmono p-20">
+          <main className="font-jbmono px-20 pt-16">
             <div className="flex flex-row text-highlight justify-between gap-x-32">
               <div className="w-1/2 flex flex-col">
                 <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
                 <FileDropZone />
-                <span className="w-full pt-2 text-center text-accRed">
+                <span className="w-full pt-2 text-center text-accRed text-lg">
                   {error}
                 </span>
               </div>
               <div className="w-1/2 pt-14 flex flex-col">
-                <h1 className="text-2xl pb-2">Results:</h1>
+                <h1 className="text-3xl pb-2">Results:</h1>
                 <AnswerBox />
                 <div className="flex flex-row justify-evenly pt-3">
                   <SettingButton
@@ -55,7 +55,7 @@ function Home() {
                   />
                   <KInput setter={setK} />
                 </div>
-                <span className="text-center w-full py-1 text-md text-highlight animate-pulse">
+                <span className="text-center w-full py-1 text-lg text-highlight animate-pulse">
                   {(toolTip === "" && "") ||
                     (toolTip === "ALL" && "Showing results from ALL files") ||
                     (toolTip === "PER" && "Showing results PER file") ||
@@ -133,24 +133,24 @@ const FileDropZone = () => {
           : "border-highlight"
       }
       ${
-        droppedFiles.length === 0 && "justify-center flex flex-col h-[500px]"
+        droppedFiles.length === 0 && "justify-center flex flex-col h-[540px]"
       } relative w-full border-2 border-dashed py-4 text-center cursor-pointer rounded-md transition-all`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <p className="pb-2">
+      <p className="pb-2 text-2xl">
         {droppedFiles.length === 0
           ? "Drag and drop your files here"
           : "You can still drop more!"}
       </p>
       {droppedFiles.length === 0 ? (
-        <p>
+        <p className="text-lg">
           or click <input type="file" id="fileInput" className="hidden" />
           <label
             htmlFor="fileInput"
-            className="cursor-pointer text-accCyan hover:underline"
+            className="cursor-pointer text-accCyan hover:underline text-xl"
           >
             HERE
           </label>
@@ -161,7 +161,7 @@ const FileDropZone = () => {
       {droppedFiles.length > 0 && (
         <>
           <hr className="mx-4" />
-          <ul className="my-4 h-[360px] overflow-y-auto scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10">
+          <ul className="my-4 h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10">
             {droppedFiles.map((file) => (
               <li
                 key={file.name}
@@ -255,7 +255,7 @@ const AnswerBox = () => {
 
   return (
     <div className="bg-dimshadow border-highlight">
-      <div className="border-2 py-2 h-[400px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10 transition-all">
+      <div className="border-2 py-2 h-[440px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10 transition-all">
         {Array.isArray(results[0]) && results[0].length > 0 ? (
           <NestedListItems />
         ) : (
@@ -330,9 +330,9 @@ const SettingButton = (props: ISettingButton) => {
     <button
       className={`border-2 ${
         setting === opt1
-          ? "border-accCyan text-accCyan"
-          : "border-accYellow text-accYellow"
-      } rounded-md w-1/5 transition-all`}
+          ? "border-accCyan text-accCyan hover:bg-accCyan"
+          : "border-accYellow text-accYellow hover:bg-accYellow"
+      } rounded-md w-1/5 transition-all text-lg hover:text-highlight`}
       onClick={() => setter(setting === opt1 ? opt2 : opt1)}
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -362,7 +362,7 @@ const KInput = (props: IKInput) => {
     <input
       type="number"
       placeholder="K Value"
-      className={` w-1/5 bg-transparent rounded-md border-2 text-center number-input focus:outline-none ${
+      className={` w-1/5 bg-transparent rounded-md border-2 text-center text-lg number-input focus:outline-none hover:animate-none placeholder-highlight/50 ${
         Number.isNaN(k) || k < 1
           ? "animate-pulse border-accRed"
           : "border-highlight"
@@ -381,6 +381,6 @@ const checkError = (
   if (Number.isNaN(k) || k < 1) setError("K must be a positive integer");
   for (let file of droppedFiles) {
     if (!file.name.endsWith(".txt") || file.size > 1000000)
-      setError("Invalid file - .txt files not more than 1MB only");
+      setError("Invalid file! (.txt files not more than 1MB only)");
   }
 };
