@@ -5,12 +5,12 @@ export interface UserDTO {
   count: number;
 }
 
-interface ResultContextprops {
+interface ResultContextProps {
   results: UserDTO[] | UserDTO[][];
   setResults: (results: UserDTO[] | UserDTO[][]) => void;
 }
 
-export const ResultContext = createContext<ResultContextprops>({
+export const ResultContext = createContext<ResultContextProps>({
   results: [],
   setResults: (results: UserDTO[] | UserDTO[][]) => {},
 });

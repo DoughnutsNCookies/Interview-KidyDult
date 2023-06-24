@@ -1,11 +1,11 @@
 import { createContext } from "react";
 
-interface ErrorContextprops {
+interface ErrorContextProps {
   error: string;
   setError: (error: string) => void;
 }
 
-export const ErrorContext = createContext<ErrorContextprops>({
+export const ErrorContext = createContext<ErrorContextProps>({
   error: "",
   setError: (error: string) => {},
 });

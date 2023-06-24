@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import SettingContext from "../contexts/SettingContext";
 import { UserDTO, ResultContext } from "../contexts/ResultContext";
 import { ErrorContext } from "@/contexts/ErrorContext";
+import { UploadedContext } from "@/contexts/UploadedContext";
 
 function Home() {
   const [type, setType] = useState<string>("ALL");
@@ -12,66 +13,69 @@ function Home() {
   const [results, setResults] = useState<UserDTO[] | UserDTO[][]>([]);
   const [toolTip, setToolTip] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [uploaded, setUploaded] = useState<boolean>(false);
 
   return (
-    <ErrorContext.Provider value={{ error, setError }}>
-      <SettingContext.Provider
-        value={{ type, order, find, k, droppedFiles, setDroppedFiles }}
-      >
-        <ResultContext.Provider value={{ results, setResults }}>
-          <main className="font-jbmono px-20 pt-16">
-            <div className="flex flex-row text-highlight justify-between gap-x-32">
-              <div className="w-1/2 flex flex-col">
-                <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
-                <FileDropZone />
-                <span className="w-full pt-2 text-center text-accRed text-lg">
-                  {error}
-                </span>
-              </div>
-              <div className="w-1/2 pt-14 flex flex-col">
-                <h1 className="text-3xl pb-2">Results:</h1>
-                <AnswerBox />
-                <div className="flex flex-row justify-evenly pt-3">
-                  <SettingButton
-                    opt1="ALL"
-                    opt2="PER"
-                    setter={setType}
-                    setting={type}
-                    setTooltip={setToolTip}
-                  />
-                  <SettingButton
-                    opt1="DESC"
-                    opt2="ASC"
-                    setter={setOrder}
-                    setting={order}
-                    setTooltip={setToolTip}
-                  />
-                  <SettingButton
-                    opt1="WORD"
-                    opt2="SENT"
-                    setter={setFind}
-                    setting={find}
-                    setTooltip={setToolTip}
-                  />
-                  <KInput setter={setK} />
+    <UploadedContext.Provider value={{ uploaded, setUploaded }}>
+      <ErrorContext.Provider value={{ error, setError }}>
+        <SettingContext.Provider
+          value={{ type, order, find, k, droppedFiles, setDroppedFiles }}
+        >
+          <ResultContext.Provider value={{ results, setResults }}>
+            <main className="font-jbmono px-20 pt-16">
+              <div className="flex flex-row text-highlight justify-between gap-x-32">
+                <div className="w-1/2 flex flex-col">
+                  <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
+                  <FileDropZone />
+                  <span className="w-full pt-2 text-center text-accRed text-lg">
+                    {error}
+                  </span>
                 </div>
-                <span className="text-center w-full py-1 text-lg text-highlight animate-pulse">
-                  {(toolTip === "" && "") ||
-                    (toolTip === "ALL" && "Showing results from ALL files") ||
-                    (toolTip === "PER" && "Showing results PER file") ||
-                    (toolTip === "DESC" && "Showing results in DESC order") ||
-                    (toolTip === "ASC" && "Showing results in ASC order") ||
-                    (toolTip === "WORD" &&
-                      "Showing results of WORD count per user") ||
-                    (toolTip === "SENT" &&
-                      "Showing results of SENTENCE count per user")}
-                </span>
+                <div className="w-1/2 pt-14 flex flex-col">
+                  <h1 className="text-3xl pb-2">Results:</h1>
+                  <AnswerBox />
+                  <div className="flex flex-row justify-evenly pt-3">
+                    <SettingButton
+                      opt1="ALL"
+                      opt2="PER"
+                      setter={setType}
+                      setting={type}
+                      setTooltip={setToolTip}
+                    />
+                    <SettingButton
+                      opt1="DESC"
+                      opt2="ASC"
+                      setter={setOrder}
+                      setting={order}
+                      setTooltip={setToolTip}
+                    />
+                    <SettingButton
+                      opt1="WORD"
+                      opt2="SENT"
+                      setter={setFind}
+                      setting={find}
+                      setTooltip={setToolTip}
+                    />
+                    <KInput setter={setK} />
+                  </div>
+                  <span className="text-center w-full py-1 text-lg text-highlight animate-pulse">
+                    {(toolTip === "" && "") ||
+                      (toolTip === "ALL" && "Showing results from ALL files") ||
+                      (toolTip === "PER" && "Showing results PER file") ||
+                      (toolTip === "DESC" && "Showing results in DESC order") ||
+                      (toolTip === "ASC" && "Showing results in ASC order") ||
+                      (toolTip === "WORD" &&
+                        "Showing results of WORD count per user") ||
+                      (toolTip === "SENT" &&
+                        "Showing results of SENTENCE count per user")}
+                  </span>
+                </div>
               </div>
-            </div>
-          </main>
-        </ResultContext.Provider>
-      </SettingContext.Provider>
-    </ErrorContext.Provider>
+            </main>
+          </ResultContext.Provider>
+        </SettingContext.Provider>
+      </ErrorContext.Provider>
+    </UploadedContext.Provider>
   );
 }
 
@@ -82,10 +86,12 @@ const FileDropZone = () => {
   const { type, order, find, k, droppedFiles, setDroppedFiles } =
     useContext(SettingContext);
   const { setResults } = useContext(ResultContext);
-  const { setError } = useContext(ErrorContext);
+  const { error, setError } = useContext(ErrorContext);
+  const { setUploaded } = useContext(UploadedContext);
 
   useEffect(() => {
     checkError(k, droppedFiles, setError);
+    if (droppedFiles.length === 0) setUploaded(false);
   }, [droppedFiles]);
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
@@ -123,6 +129,12 @@ const FileDropZone = () => {
   const handleRemoveAll = () => {
     setDroppedFiles([]);
     setResults([]);
+    setUploaded(false);
+  };
+
+  const handleUpload = () => {
+    uploadFiles(type, order, find, k, droppedFiles, setResults);
+    setUploaded(true);
   };
 
   return (
@@ -190,10 +202,13 @@ const FileDropZone = () => {
           <hr className="pb-4 mx-4" />
           <div className="flex flex-row justify-evenly">
             <button
-              className="text-accGreen w-1/3 font-bold border-2 border-accGreen px-2 py-1 rounded-md hover:bg-accGreen hover:text-white transition-all"
-              onClick={async () =>
-                uploadFiles(type, order, find, k, droppedFiles, setResults)
-              }
+              className={`w-1/3 font-bold border-2 px-2 py-1 ${
+                error === ""
+                  ? "text-accGreen border-accGreen hover:bg-accGreen hover:text-white"
+                  : "text-accGreen/50 border-accGreen/50"
+              } rounded-md transition-all`}
+              onClick={() => handleUpload()}
+              disabled={error !== ""}
             >
               Upload
             </button>
@@ -240,7 +255,7 @@ const AnswerBox = () => {
   const NestedListItems = () => (
     <>
       {results.map((file: any, fileIndex) => (
-        <div key={fileIndex} className="pb-2">
+				<div key={fileIndex} className="pb-2">
           <span className="text-lg ml-4">
             {droppedFiles[fileIndex].name.length <= 32
               ? droppedFiles[fileIndex].name
@@ -316,9 +331,10 @@ const SettingButton = (props: ISettingButton) => {
   const { type, order, find, k, droppedFiles } = useContext(SettingContext);
   const { setResults } = useContext(ResultContext);
   const [hover, setHover] = useState<boolean>(false);
+  const { uploaded } = useContext(UploadedContext);
 
   useEffect(() => {
-    uploadFiles(type, order, find, k, droppedFiles, setResults);
+    if (uploaded) uploadFiles(type, order, find, k, droppedFiles, setResults);
     setTooltip(setting);
   }, [setting]);
 
@@ -350,12 +366,13 @@ const KInput = (props: IKInput) => {
   const { setter } = props;
   const { type, order, find, k, droppedFiles } = useContext(SettingContext);
   const { setResults } = useContext(ResultContext);
-  const { error, setError } = useContext(ErrorContext);
+	const { error, setError } = useContext(ErrorContext);
+	const { uploaded } = useContext(UploadedContext);
 
   useEffect(() => {
     checkError(k, droppedFiles, setError);
-    if (error !== "") return;
-    uploadFiles(type, order, find, k, droppedFiles, setResults);
+		if (error !== "") return;
+		if (uploaded) uploadFiles(type, order, find, k, droppedFiles, setResults);
   }, [k]);
 
   return (

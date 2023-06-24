@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-interface SettingContextprops {
+interface SettingContextProps {
   type: string;
   order: string;
 	find: string;
@@ -9,7 +9,7 @@ interface SettingContextprops {
 	setDroppedFiles: (files: any) => void,
 }
 
-const SettingContext = createContext<SettingContextprops>({
+const SettingContext = createContext<SettingContextProps>({
   type: "ALL",
   order: "DESC",
 	find: "WORD",
