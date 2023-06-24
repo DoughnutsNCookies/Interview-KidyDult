@@ -12,7 +12,7 @@ function Home() {
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [results, setResults] = useState<UserDTO[] | UserDTO[][]>([]);
   const [toolTip, setToolTip] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<number>(0);
   const [uploaded, setUploaded] = useState<boolean>(false);
 
   return (
@@ -28,7 +28,11 @@ function Home() {
                   <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
                   <FileDropZone />
                   <span className="w-full pt-2 text-center text-accRed text-lg">
-                    {error}
+                    {error === 1
+                      ? "K must be a positive integer"
+                      : error === 2
+                      ? "Invalid file! (.txt files not more than 1MB only)"
+                      : ""}
                   </span>
                 </div>
                 <div className="w-1/2 pt-14 flex flex-col">
@@ -126,15 +130,24 @@ const FileDropZone = () => {
     );
   };
 
+  const handleUpload = () => {
+    uploadFiles(type, order, find, k, droppedFiles, setResults);
+    setUploaded(true);
+  };
+
+  const handleRemoveInvalid = () => {
+    setDroppedFiles(
+      droppedFiles.filter((file) => {
+        return file.name.endsWith(".txt") && file.size <= 1000000;
+      })
+    );
+    checkError(k, droppedFiles, setError);
+  };
+
   const handleRemoveAll = () => {
     setDroppedFiles([]);
     setResults([]);
     setUploaded(false);
-  };
-
-  const handleUpload = () => {
-    uploadFiles(type, order, find, k, droppedFiles, setResults);
-    setUploaded(true);
   };
 
   return (
@@ -181,7 +194,7 @@ const FileDropZone = () => {
               >
                 <span
                   className={`${
-                    file.name.endsWith(".txt") && file.size < 1000000
+                    file.name.endsWith(".txt") && file.size <= 1000000
                       ? "text-highlight"
                       : "text-accRed"
                   } pl-4`}
@@ -202,18 +215,29 @@ const FileDropZone = () => {
           <hr className="pb-4 mx-4" />
           <div className="flex flex-row justify-evenly">
             <button
-              className={`w-1/3 font-bold border-2 px-2 py-1 ${
-                error === ""
-                  ? "text-accGreen border-accGreen hover:bg-accGreen hover:text-white"
-                  : "text-accGreen/50 border-accGreen/50"
+              className={`w-1/4 font-bold border-2 px-2 py-1 ${
+                error
+                  ? "text-accGreen/50 border-accGreen/50"
+                  : "text-accGreen border-accGreen hover:bg-accGreen hover:text-white"
               } rounded-md transition-all`}
               onClick={() => handleUpload()}
-              disabled={error !== ""}
+              disabled={error !== 0}
             >
               Upload
             </button>
             <button
-              className="text-accRed w-1/3 border-2 border-accRed px-2 py-1 rounded-md hover:bg-accRed hover:text-white transition-all"
+              className={`${
+                error === 2
+                  ? "text-accCyan border-accCyan hover:bg-accCyan hover:text-white"
+                  : "text-accCyan/50 border-accCyan/50"
+              } w-1/4 border-2 px-2 py-1 rounded-md transition-all`}
+              onClick={() => handleRemoveInvalid()}
+              disabled={error !== 2}
+            >
+              Remove Invalid
+            </button>
+            <button
+              className="text-accRed w-1/4 border-2 border-accRed px-2 py-1 rounded-md hover:bg-accRed hover:text-white transition-all"
               onClick={() => handleRemoveAll()}
             >
               Remove All
@@ -255,7 +279,7 @@ const AnswerBox = () => {
   const NestedListItems = () => (
     <>
       {results.map((file: any, fileIndex) => (
-				<div key={fileIndex} className="pb-2">
+        <div key={fileIndex} className="pb-2">
           <span className="text-lg ml-4">
             {droppedFiles[fileIndex].name.length <= 32
               ? droppedFiles[fileIndex].name
@@ -366,13 +390,13 @@ const KInput = (props: IKInput) => {
   const { setter } = props;
   const { type, order, find, k, droppedFiles } = useContext(SettingContext);
   const { setResults } = useContext(ResultContext);
-	const { error, setError } = useContext(ErrorContext);
-	const { uploaded } = useContext(UploadedContext);
+  const { error, setError } = useContext(ErrorContext);
+  const { uploaded } = useContext(UploadedContext);
 
   useEffect(() => {
     checkError(k, droppedFiles, setError);
-		if (error !== "") return;
-		if (uploaded) uploadFiles(type, order, find, k, droppedFiles, setResults);
+    if (error) return;
+    if (uploaded) uploadFiles(type, order, find, k, droppedFiles, setResults);
   }, [k]);
 
   return (
@@ -392,12 +416,11 @@ const KInput = (props: IKInput) => {
 const checkError = (
   k: number,
   droppedFiles: File[],
-  setError: (error: string) => void
+  setError: (error: number) => void
 ) => {
-  setError("");
-  if (Number.isNaN(k) || k < 1) setError("K must be a positive integer");
+  setError(0);
+  if (Number.isNaN(k) || k < 1) setError(1);
   for (let file of droppedFiles) {
-    if (!file.name.endsWith(".txt") || file.size > 1000000)
-      setError("Invalid file! (.txt files not more than 1MB only)");
+    if (!file.name.endsWith(".txt") || file.size > 1000000) setError(2);
   }
 };
