@@ -1,7 +1,7 @@
 #!/bin/bash
 
 num_users=100
-conversations=10000
+conversations=2
 char_range_min=1
 char_range_max=10
 
