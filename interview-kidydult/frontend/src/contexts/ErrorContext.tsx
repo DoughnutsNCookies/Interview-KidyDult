@@ -6,6 +6,6 @@ interface ErrorContextProps {
 }
 
 export const ErrorContext = createContext<ErrorContextProps>({
-  error: "",
+  error: 0,
   setError: (error: number) => {},
 });
