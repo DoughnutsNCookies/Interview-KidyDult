@@ -58,7 +58,8 @@ export class AppService {
             else map.set(name, (map.get(name) || 0) + 1);
           }
         }
-      }
+			}
+			fs.unlink(file, (err) => { });
     }
 
     const sortedMap = new Map(
