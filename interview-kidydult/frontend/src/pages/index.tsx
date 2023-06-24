@@ -281,7 +281,8 @@ const AnswerBox = () => {
       {results.map((file: any, fileIndex) => (
         <div key={fileIndex} className="pb-2">
           <span className="text-lg ml-4">
-            {droppedFiles[fileIndex].name.length <= 32
+            {droppedFiles[fileIndex] &&
+            droppedFiles[fileIndex].name.length <= 32
               ? droppedFiles[fileIndex].name
               : droppedFiles[fileIndex].name.substring(0, 32) + "..."}
           </span>
