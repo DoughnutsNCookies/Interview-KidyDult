@@ -1,2 +1,2 @@
-# Interview-Technial_Accessment
-Technial Accessment for my interview
+# Interview-KidyDult
+Technical Assessment for my interview for KidyDult
