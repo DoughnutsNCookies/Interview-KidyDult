@@ -1,2 +1,2 @@
 # Interview-KidyDult
-Technical Accessment for my interview for KidyDult
+Technical Assessment for my interview for KidyDult
