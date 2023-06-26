@@ -230,7 +230,9 @@ const FileDropZone = () => {
       {droppedFiles.length === 0 ? (
         <p
           className={`${
-            animation ? "" : "opacity-0 transition-all ease-in-out duration-1000"
+            animation
+              ? ""
+              : "opacity-0 transition-all ease-in-out duration-1000"
           } text-lg`}
         >
           or click{" "}
@@ -327,17 +329,21 @@ const AnswerBox = () => {
           key={result.name}
           className="pb-1 flex flex-row justify-between rounded-md transition-all hover:bg-highlight/10"
         >
-          <div className="flex flex-row">
-            <span className="pl-4 font-bold w-14">{userIndex + 1}.</span>
-            <span>
-              {result.name.length <= 16
-                ? result.name
-                : result.name.substring(0, 16) + "..."}
+          {result.name && (
+            <div className="flex flex-row">
+              <span className="pl-4 font-bold w-14">{userIndex + 1}.</span>
+              <span>
+                {result.name.length <= 16
+                  ? result.name
+                  : result.name.substring(0, 16) + "..."}
+              </span>
+            </div>
+          )}
+          {result.name && (
+            <span className="pr-4">
+              {result.count} {find === "WORD" ? "words" : "sentences"}
             </span>
-          </div>
-          <span className="pr-4">
-            {result.count} {find === "WORD" ? "words" : "sentences"}
-          </span>
+          )}
         </li>
       ))}
     </ul>
