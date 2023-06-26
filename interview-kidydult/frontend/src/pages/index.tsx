@@ -220,8 +220,8 @@ const FileDropZone = () => {
     >
       <p
         className={`${
-          animation ? "" : "opacity-0"
-        } transition-all ease-in-out duration-1000 pb-2 text-2xl`}
+          animation ? "" : "opacity-0 transition-all ease-in-out duration-1000"
+        } pb-2 text-2xl`}
       >
         {droppedFiles.length === 0
           ? "Drag and drop your files here"
@@ -230,8 +230,8 @@ const FileDropZone = () => {
       {droppedFiles.length === 0 ? (
         <p
           className={`${
-            animation ? "" : "opacity-0"
-          } transition-all ease-in-out duration-1000 text-lg`}
+            animation ? "" : "opacity-0 transition-all ease-in-out duration-1000"
+          } text-lg`}
         >
           or click{" "}
           <input
