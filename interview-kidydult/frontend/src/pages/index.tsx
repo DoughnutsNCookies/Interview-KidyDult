@@ -32,8 +32,14 @@ function Home() {
           value={{ type, order, find, k, droppedFiles, setDroppedFiles }}
         >
           <ResultContext.Provider value={{ results, setResults }}>
-            <main className={`font-jbmono ${mobile ? "px-4 py-10" : "px-20 pt-16"}`}>
-              <div className={`flex ${mobile ? "flex-col" : "flex-row" } text-highlight justify-between gap-x-32`}>
+            <main
+              className={`font-jbmono ${mobile ? "px-4 py-10" : "px-20 pt-16"}`}
+            >
+              <div
+                className={`flex ${
+                  mobile ? "flex-col" : "flex-row"
+                } text-highlight justify-between gap-x-32`}
+              >
                 <div className={`${mobile ? "w-full" : "w-1/2"} flex flex-col`}>
                   <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
                   <FileDropZone />
@@ -45,7 +51,11 @@ function Home() {
                       : ""}
                   </span>
                 </div>
-                <div className={`${mobile ? "w-full" : "w-1/2"} pt-14 flex flex-col`}>
+                <div
+                  className={`${
+                    mobile ? "w-full" : "w-1/2"
+                  } pt-14 flex flex-col`}
+                >
                   <h1 className="text-3xl pb-2">Results:</h1>
                   <AnswerBox />
                   <div className="flex flex-row justify-evenly pt-3">
