@@ -14,16 +14,6 @@ function Home() {
   const [toolTip, setToolTip] = useState<string>("");
   const [error, setError] = useState<number>(0);
   const [uploaded, setUploaded] = useState<boolean>(false);
-  const [mobile, setMobile] = useState<boolean>(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   return (
     <UploadedContext.Provider value={{ uploaded, setUploaded }}>
@@ -32,15 +22,11 @@ function Home() {
           value={{ type, order, find, k, droppedFiles, setDroppedFiles }}
         >
           <ResultContext.Provider value={{ results, setResults }}>
-            <main
-              className={`font-jbmono ${mobile ? "px-4 py-10" : "px-20 pt-16"}`}
-            >
+            <main className="font-jbmono px-4 py-10 lg:px-20 lg:pt-16 min-w-[530px]">
               <div
-                className={`flex ${
-                  mobile ? "flex-col" : "flex-row"
-                } text-highlight justify-between gap-x-32`}
+                className={`flex flex-col lg:flex-row text-highlight justify-between gap-x-16 xl:gap-x-32`}
               >
-                <div className={`${mobile ? "w-full" : "w-1/2"} flex flex-col`}>
+                <div className="w-full lg:w-1/2 flex flex-col">
                   <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
                   <FileDropZone />
                   <span className="w-full pt-2 text-center text-accRed text-lg">
@@ -51,11 +37,7 @@ function Home() {
                       : ""}
                   </span>
                 </div>
-                <div
-                  className={`${
-                    mobile ? "w-full" : "w-1/2"
-                  } pt-14 flex flex-col`}
-                >
+                <div className="w-full lg:w-1/2 pt-14 flex flex-col">
                   <h1 className="text-3xl pb-2">Results:</h1>
                   <AnswerBox />
                   <div className="flex flex-row justify-evenly pt-3">
