@@ -345,7 +345,7 @@ const uploadFiles = async (
   formData.append("k", k.toString());
   try {
     const response = await fetch(
-      process.env.BACKEND_URL + "/" + type.toLowerCase(),
+      process.env.NEXT_PUBLIC_BACKEND_URL + "/" + type.toLowerCase(),
       {
         method: "POST",
         body: formData,
