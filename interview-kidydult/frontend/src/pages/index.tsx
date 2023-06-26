@@ -31,12 +31,12 @@ function Home() {
           value={{ type, order, find, k, droppedFiles, setDroppedFiles }}
         >
           <ResultContext.Provider value={{ results, setResults }}>
-            <main className="font-jbmono px-4 py-10 lg:px-20 lg:pt-16 min-w-[530px]">
-              <div className="flex flex-col lg:flex-row text-highlight justify-between gap-x-16 xl:gap-x-32">
+            <main className="font-jbmono px-4 py-10 lg:px-20 lg:pt-16 min-w-[600px]">
+              <div className="flex flex-col lg:flex-row lg:items-center text-highlight justify-between gap-16 xl:gap-32">
                 <div
                   className={`${
                     mounted ? "" : "opacity-0 -translate-x-16"
-                  } transition-all ease-in-out duration-500 w-full lg:w-1/2 flex flex-col`}
+                  } transition-all ease-in-out duration-500 w-full lg:w-1/2 flex flex-col bg-black/20 shadow-xl rounded-2xl p-5`}
                 >
                   <h1
                     className={`${
@@ -46,22 +46,22 @@ function Home() {
                     Upload a log file (.txt)
                   </h1>
                   <FileDropZone />
-                  <span
+                  <div
                     className={`${
                       animation ? "" : "opacity-0 -translate-y-4"
-                    } transition-all ease-in-out duration-500 w-full pt-2 text-center text-accRed text-lg`}
+                    } transition-all ease-in-out duration-500 w-full pt-2 text-center text-accRed text-lg h-8`}
                   >
                     {error === 1
                       ? "K must be a positive integer"
                       : error === 2
                       ? "Invalid file! (.txt files not more than 1MB only)"
                       : ""}
-                  </span>
+                  </div>
                 </div>
                 <div
                   className={`${
                     mounted ? "" : "opacity-0 translate-x-16"
-                  } transition-all ease-in-out duration-500 w-full lg:w-1/2 pt-14 flex flex-col`}
+                  } transition-all ease-in-out duration-500 w-full lg:w-1/2 flex flex-col bg-black/20 shadow-xl rounded-2xl p-5 h-fit`}
                 >
                   <h1
                     className={`${
@@ -99,9 +99,9 @@ function Home() {
                     />
                     <KInput setter={setK} />
                   </div>
-                  <span
+                  <div
                     className={
-                      "text-center w-full py-1 text-lg text-highlight animate-pulse"
+                      "text-center w-full py-1 text-lg text-highlight animate-pulse h-8"
                     }
                   >
                     {(toolTip === "" && "") ||
@@ -113,7 +113,7 @@ function Home() {
                         "Showing results of WORD count per user") ||
                       (toolTip === "SENT" &&
                         "Showing results of SENTENCE count per user")}
-                  </span>
+                  </div>
                 </div>
               </div>
             </main>
@@ -361,14 +361,12 @@ const AnswerBox = () => {
   );
 
   return (
-    <div className="bg-dimshadow border-highlight">
-      <div className="border-2 py-2 h-[440px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10 transition-all">
-        {Array.isArray(results[0]) && results[0].length > 0 ? (
-          <NestedListItems />
-        ) : (
-          <ListItems output={results} />
-        )}
-      </div>
+    <div className="bg-dimshadow border-highlight border-2 py-2 h-[440px] overflow-y-auto rounded-md scrollbar-thin scrollbar-thumb-highlight scrollbar-track-highlight/10 transition-all">
+      {Array.isArray(results[0]) && results[0].length > 0 ? (
+        <NestedListItems />
+      ) : (
+        <ListItems output={results} />
+      )}
     </div>
   );
 };
