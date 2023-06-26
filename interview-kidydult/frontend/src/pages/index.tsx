@@ -14,6 +14,15 @@ function Home() {
   const [toolTip, setToolTip] = useState<string>("");
   const [error, setError] = useState<number>(0);
   const [uploaded, setUploaded] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [animation, setAnimation] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setTimeout(() => {
+      setAnimation(true);
+    }, 500);
+  }, []);
 
   return (
     <UploadedContext.Provider value={{ uploaded, setUploaded }}>
@@ -23,13 +32,25 @@ function Home() {
         >
           <ResultContext.Provider value={{ results, setResults }}>
             <main className="font-jbmono px-4 py-10 lg:px-20 lg:pt-16 min-w-[530px]">
-              <div
-                className={`flex flex-col lg:flex-row text-highlight justify-between gap-x-16 xl:gap-x-32`}
-              >
-                <div className="w-full lg:w-1/2 flex flex-col">
-                  <h1 className="text-4xl pb-5">Upload a log file (.txt)</h1>
+              <div className="flex flex-col lg:flex-row text-highlight justify-between gap-x-16 xl:gap-x-32">
+                <div
+                  className={`${
+                    mounted ? "" : "opacity-0 -translate-x-16"
+                  } transition-all ease-in-out duration-500 w-full lg:w-1/2 flex flex-col`}
+                >
+                  <h1
+                    className={`${
+                      animation ? "" : "opacity-0 translate-y-4"
+                    } transition-all ease-in-out duration-500 text-4xl pb-5`}
+                  >
+                    Upload a log file (.txt)
+                  </h1>
                   <FileDropZone />
-                  <span className="w-full pt-2 text-center text-accRed text-lg">
+                  <span
+                    className={`${
+                      animation ? "" : "opacity-0 -translate-y-4"
+                    } transition-all ease-in-out duration-500 w-full pt-2 text-center text-accRed text-lg`}
+                  >
                     {error === 1
                       ? "K must be a positive integer"
                       : error === 2
@@ -37,10 +58,24 @@ function Home() {
                       : ""}
                   </span>
                 </div>
-                <div className="w-full lg:w-1/2 pt-14 flex flex-col">
-                  <h1 className="text-3xl pb-2">Results:</h1>
+                <div
+                  className={`${
+                    mounted ? "" : "opacity-0 translate-x-16"
+                  } transition-all ease-in-out duration-500 w-full lg:w-1/2 pt-14 flex flex-col`}
+                >
+                  <h1
+                    className={`${
+                      animation ? "" : "opacity-0 translate-y-4"
+                    } transition-all ease-in-out text-3xl pb-2`}
+                  >
+                    Results:
+                  </h1>
                   <AnswerBox />
-                  <div className="flex flex-row justify-evenly pt-3">
+                  <div
+                    className={`${
+                      animation ? "" : "opacity-0 -translate-y-4"
+                    } transition-all ease-in-out duration-700 flex flex-row justify-evenly pt-3`}
+                  >
                     <SettingButton
                       opt1="ALL"
                       opt2="PER"
@@ -64,7 +99,11 @@ function Home() {
                     />
                     <KInput setter={setK} />
                   </div>
-                  <span className="text-center w-full py-1 text-lg text-highlight animate-pulse">
+                  <span
+                    className={
+                      "text-center w-full py-1 text-lg text-highlight animate-pulse"
+                    }
+                  >
                     {(toolTip === "" && "") ||
                       (toolTip === "ALL" && "Showing results from ALL files") ||
                       (toolTip === "PER" && "Showing results PER file") ||
@@ -89,6 +128,7 @@ export default Home;
 
 const FileDropZone = () => {
   const [highlighted, setHighlighted] = useState<boolean>(false);
+  const [animation, setAnimation] = useState<boolean>(false);
   const { type, order, find, k, droppedFiles, setDroppedFiles } =
     useContext(SettingContext);
   const { setResults } = useContext(ResultContext);
@@ -99,6 +139,12 @@ const FileDropZone = () => {
     checkError(k, droppedFiles, setError);
     if (droppedFiles.length === 0) setUploaded(false);
   }, [droppedFiles]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAnimation(true);
+    }, 500);
+  });
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -124,6 +170,11 @@ const FileDropZone = () => {
         !droppedFiles.some((droppedFile) => droppedFile.name === file.name)
     );
     setDroppedFiles((prevFiles: File[]) => [...prevFiles, ...uniqueFiles]);
+  };
+
+  const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files![0];
+    if (file) setDroppedFiles([file]);
   };
 
   const handleRemoveFile = (file: File[]) => {
@@ -167,14 +218,28 @@ const FileDropZone = () => {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <p className="pb-2 text-2xl">
+      <p
+        className={`${
+          animation ? "" : "opacity-0"
+        } transition-all ease-in-out duration-1000 pb-2 text-2xl`}
+      >
         {droppedFiles.length === 0
           ? "Drag and drop your files here"
           : "You can still drop more!"}
       </p>
       {droppedFiles.length === 0 ? (
-        <p className="text-lg">
-          or click <input type="file" id="fileInput" className="hidden" />
+        <p
+          className={`${
+            animation ? "" : "opacity-0"
+          } transition-all ease-in-out duration-1000 text-lg`}
+        >
+          or click{" "}
+          <input
+            type="file"
+            id="fileInput"
+            className="hidden"
+            onChange={handleSelect}
+          />
           <label
             htmlFor="fileInput"
             className="cursor-pointer text-accCyan hover:underline text-xl"

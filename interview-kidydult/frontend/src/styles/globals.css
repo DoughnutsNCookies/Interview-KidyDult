@@ -45,6 +45,19 @@ body {
   margin: 0;
 }
 
-.number-input {
-  -moz-appearance: textfield; /* Firefox */
+.text-size-pulse {
+  font-size: 16px;
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    font-size: 16px;
+  }
+  50% {
+    font-size: 24px;
+  }
+  100% {
+    font-size: 16px;
+  }
 }
